@@ -1,8 +1,20 @@
 const { test } = require("@playwright/test");
-const initSqlJs = require('sql.js');
+const fs = require("fs");
+import { parse } from "csv-parse/sync";
+import { stringify } from "csv-stringify/sync";
+import { scrapeLinks } from "./scrapeLinks";
 
-const SQL = await initSqlJs();
-const db = new SQL.Database();
+function loadData() {
+  if (!fs.existsSync(DATA_PATH)) return [];
+  const data = fs.readFileSync(DATA_PATH, "utf-8");
+  const records = parse(data, { columns: true });
+  return records;
+}
+
+export async function saveData(data) {
+  const csv = stringify(data, { header: true });
+  fs.writeFileSync(DATA_PATH, csv, "utf-8");
+}
 
 const Bottleneck = require("bottleneck");
 const limiter = new Bottleneck({
@@ -10,52 +22,35 @@ const limiter = new Bottleneck({
 });
 
 const HOST = "https://www.trademe.co.nz";
+
+// const DATA_PATH = "500k.csv";
+// const SEARCH =
+//   "/a/property/residential/sale/search?price_max=500000&bedrooms_min=1&property_type=house&land_area_min=0.1&sort_order=expirydesc";
+const DATA_PATH = "1mil.csv";
 const SEARCH =
   "/a/property/residential/sale/search?price_max=1000000&bedrooms_min=1&property_type=house&land_area_min=1&sort_order=expirydesc";
 
-test("scrape", async ({ page }) => {
-  async function goto(path) {
-    const url = `${HOST}${path.startsWith("/") ? path : `/${path}`}`;
-    await limiter.schedule(() => page.goto(url));
+export async function goto(page, path) {
+  const url = `${HOST}${path.startsWith("/") ? path : `/${path}`}`;
+  await limiter.schedule(() =>
+    page.goto(url, { waitUntil: "domcontentloaded" })
+  );
+}
+
+export function outputFibre(data) {
+  for (const item of data) {
+    if (item.broadband.includes("Fibre")) {
+      console.log(`${item.addressText}, ${item.price}, ${HOST}${item.href}`);
+    }
   }
+}
 
-  await goto(SEARCH);
+test("scrape", async ({ page, context }) => {
+  const data = loadData();
 
-  const results = await page.$$("tm-search-card-switcher");
+  await goto(page, SEARCH);
 
-  console.log(`Found ${results.length} results`);
-
-  const links = []
-
-  for (const result of results) {
-    const link = await result.$("a");
-    if (!link) throw new Error("Link not found");
-    const href = await link.getAttribute("href");
-    if (!href) throw new Error("Link has no href");
-    const address = await result.$("tm-property-search-card-address-subtitle");
-    if (!address) throw new Error("Address not found");
-    const addressText = await address.textContent();
-    const priceSelector = await result.$(
-      ".tm-property-search-card-price-attribute__price"
-    );
-    if (!priceSelector) throw new Error("Price not found");
-    const price = await priceSelector?.textContent();
-    links.push({
-      addressText,
-      price,
-      href
-    })
-  }
-
-  for (const { href, addressText, price } of links) {
-    await goto(href);
-    const broadbandSelector = await page.$("tm-broadband-technologies");
-    if (!broadbandSelector) continue;
-    const broadband = await broadbandSelector.textContent();
-    console.log(addressText);
-    console.log(`\t${price}`);
-    console.log(`\t${broadband}`);
-  }
+  await scrapeLinks(data, page);
 
   await page.pause();
 });

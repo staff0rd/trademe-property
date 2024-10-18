@@ -3,7 +3,9 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
-  "scripts": {},
+  "scripts": {
+    "test": "npx playwright test"
+  },
   "keywords": [],
   "author": "",
   "license": "ISC",
@@ -13,6 +15,6 @@
   },
   "dependencies": {
     "bottleneck": "^2.19.5",
-    "sql.js": "^1.11.0"
+    "csv": "^6.3.10"
   }
 }
