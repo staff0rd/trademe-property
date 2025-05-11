@@ -28,6 +28,9 @@ export async function findNewProperties(
     
     if (data.find((x) => x.addressText === addressText)) continue;
     
+    // Check if the price text contains a valid price format ($X,XXX or $XXX,XXX etc)
+    if (!price.match(/\$\d{1,3}(?:,\d{3})*$/)) continue;
+    
     //console.log(`Found ${addressText}, ${price}`);
     data.push({
       addressText,

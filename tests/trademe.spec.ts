@@ -22,6 +22,7 @@ const LandArea = {
   "1ha":1,
   "750m2": 0.075,
   "1000m2": 0.1,
+  "2000m2": 0.2,
 }
 
 const MaxPrice = {
@@ -32,7 +33,7 @@ const MaxPrice = {
 
 const DATA_PATH = "750k_1000m2.csv";
 const SEARCH =
-  `/a/property/residential/sale/search?price_max=${MaxPrice}&bedrooms_min=1&property_type=house&land_area_min=${LandArea["1000m2"]}&sort_order=expirydesc`;
+  `/a/property/residential/sale/search?price_max=${MaxPrice}&bedrooms_min=1&property_type=house&land_area_min=${LandArea["2000m2"]}&sort_order=expirydesc`;
 
 test("scrape", async ({ page, context }) => {
   await goto(page, SEARCH, "tm-search-card-switcher");
