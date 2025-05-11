@@ -1,8 +1,15 @@
 import { getBroadbandForData } from "./getBroadbandForData";
 import { goto, saveData } from "./trademe.spec";
 import { printPropertiesWithFibre } from "./printPropertiesWithFibre";
+import { Page, BrowserContext } from "@playwright/test";
+import { PropertyRecord } from "./types";
 
-export async function scrapeLinks(data, indexPage, context, count = 1) {
+export async function scrapeLinks(
+  data: PropertyRecord[],
+  indexPage: Page,
+  context: BrowserContext,
+  count: number = 1
+): Promise<void> {
   const results = await indexPage.$$("tm-search-card-switcher");
 
   console.log(`Found ${results.length} results on page ${count}`);
@@ -15,11 +22,13 @@ export async function scrapeLinks(data, indexPage, context, count = 1) {
     const address = await result.$("tm-property-search-card-address-subtitle");
     if (!address) throw new Error("Address not found");
     const addressText = await address.textContent();
+    if (!addressText) throw new Error("Address text not found");
     const priceSelector = await result.$(
       ".tm-property-search-card-price-attribute__price"
     );
     if (!priceSelector) throw new Error("Price not found");
-    const price = await priceSelector?.textContent();
+    const price = await priceSelector.textContent();
+    if (!price) throw new Error("Price text not found");
     if (data.find((x) => x.addressText === addressText)) continue;
     data.push({
       addressText,

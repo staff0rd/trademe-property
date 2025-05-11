@@ -5,14 +5,17 @@
   "main": "index.js",
   "scripts": {
     "test": "npx playwright test",
-    "test:headed": "npx playwright test --headed"
+    "test:headed": "npx playwright test --headed",
+    "build": "tsc",
+    "prebuild": "tsc --noEmit"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "devDependencies": {
     "@playwright/test": "^1.47.2",
-    "@types/node": "^22.7.4"
+    "@types/node": "^22.7.4",
+    "typescript": "^5.0.0"
   },
   "dependencies": {
     "bottleneck": "^2.19.5",
