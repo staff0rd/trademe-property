@@ -18,9 +18,21 @@ export async function saveData(data: PropertyRecord[]): Promise<void> {
   fs.writeFileSync(DATA_PATH, csv, "utf-8");
 }
 
-const DATA_PATH = "1mil.csv";
+const LandArea = {
+  "1ha":1,
+  "750m2": 0.075,
+  "1000m2": 0.1,
+}
+
+const MaxPrice = {
+  "1m": 1000000,
+  "750k": 750000,
+}
+
+
+const DATA_PATH = "750k_1000m2.csv";
 const SEARCH =
-  "/a/property/residential/sale/search?price_max=1000000&bedrooms_min=1&property_type=house&land_area_min=1&sort_order=expirydesc";
+  `/a/property/residential/sale/search?price_max=${MaxPrice}&bedrooms_min=1&property_type=house&land_area_min=${LandArea["1000m2"]}&sort_order=expirydesc`;
 
 test("scrape", async ({ page, context }) => {
   await goto(page, SEARCH, "tm-search-card-switcher");
