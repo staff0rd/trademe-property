@@ -31,15 +31,18 @@ const DATA_PATH = "1mil.csv";
 const SEARCH =
   "/a/property/residential/sale/search?price_max=1000000&bedrooms_min=1&property_type=house&land_area_min=1&sort_order=expirydesc";
 
-export async function goto(page: Page, path: string): Promise<void> {
+export async function goto(page: Page, path: string, waitForSelector?: string): Promise<void> {
   const url = `${HOST}${path.startsWith("/") ? path : `/${path}`}`;
-  await limiter.schedule(() =>
-    page.goto(url, { waitUntil: "domcontentloaded" })
-  );
+  await limiter.schedule(async () => {
+    await page.goto(url, { waitUntil: "domcontentloaded" });
+    if (waitForSelector) {
+      await page.waitForSelector(waitForSelector, { timeout: 30000 });
+    }
+  });
 }
 
 test("scrape", async ({ page, context }) => {
-  await goto(page, SEARCH);
+  await goto(page, SEARCH, "tm-search-card-switcher");
   await scrapeLinks([], page, context);
   await page.pause();
 });
