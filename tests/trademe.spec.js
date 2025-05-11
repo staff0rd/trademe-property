@@ -21,7 +21,7 @@ const limiter = new Bottleneck({
   minTime: 1033,
 });
 
-const HOST = "https://www.trademe.co.nz";
+export const HOST = "https://www.trademe.co.nz";
 
 // const DATA_PATH = "500k.csv";
 // const SEARCH =
@@ -37,20 +37,10 @@ export async function goto(page, path) {
   );
 }
 
-export function outputFibre(data) {
-  for (const item of data) {
-    if (item.broadband.includes("Fibre")) {
-      console.log(`${item.addressText}, ${item.price}, ${HOST}${item.href}`);
-    }
-  }
-}
-
 test("scrape", async ({ page, context }) => {
-  const data = loadData();
-
   await goto(page, SEARCH);
 
-  await scrapeLinks(data, page);
+  await scrapeLinks([], page, context);
 
   await page.pause();
 });

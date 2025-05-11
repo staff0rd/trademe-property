@@ -1,7 +1,8 @@
 import { getBroadbandForData } from "./getBroadbandForData";
-import { goto, outputFibre, saveData } from "./trademe.spec";
+import { goto, saveData } from "./trademe.spec";
+import { printPropertiesWithFibre } from "./printPropertiesWithFibre";
 
-export async function scrapeLinks(data, indexPage, itemPage, count = 1) {
+export async function scrapeLinks(data, indexPage, context, count = 1) {
   const results = await indexPage.$$("tm-search-card-switcher");
 
   console.log(`Found ${results.length} results on page ${count}`);
@@ -28,13 +29,13 @@ export async function scrapeLinks(data, indexPage, itemPage, count = 1) {
     });
   }
 
-  await getBroadbandForData(data, await context.newPage(), page, goto);
+  await getBroadbandForData(data, await context.newPage());
 
-  outputFibre(data);
+  printPropertiesWithFibre(data);
 
   saveData(data);
 
-  const next = await page
+  const next = await indexPage
     .locator("tg-pagination-link")
     .filter({ hasText: "Next" });
   if ((await next.count()) === 0) {
@@ -43,5 +44,5 @@ export async function scrapeLinks(data, indexPage, itemPage, count = 1) {
   }
 
   await next.click();
-  await scrapeLinks(data, page, count + 1);
+  await scrapeLinks(data, indexPage, context, count + 1);
 }
