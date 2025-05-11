@@ -24,6 +24,7 @@ const SEARCH =
 
 test("scrape", async ({ page, context }) => {
   await goto(page, SEARCH, "tm-search-card-switcher");
-  await scrapeLinks([], page, context);
+  const data = loadData();
+  await scrapeLinks(data, page, context);
   await page.pause();
 });
