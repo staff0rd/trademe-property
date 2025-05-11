@@ -1,5 +1,5 @@
 import { getBroadbandForData } from "./getBroadbandForData";
-import { goto, saveData } from "./trademe.spec";
+import { saveData } from "./trademe.spec";
 import { printPropertiesWithFibre } from "./printPropertiesWithFibre";
 import { Page, BrowserContext } from "@playwright/test";
 import { PropertyRecord } from "./types";

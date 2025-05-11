@@ -1,4 +1,4 @@
-import { goto } from "./trademe.spec";
+import { goto } from "./navigation";
 import { Page } from "@playwright/test";
 import { PropertyRecord } from "./types";
 

@@ -1,4 +1,4 @@
-import { HOST } from "./trademe.spec";
+import { HOST } from "./navigation";
 import { PropertyRecord } from "./types";
 
 export function printPropertiesWithFibre(data: PropertyRecord[]): void {
