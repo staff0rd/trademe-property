@@ -6,6 +6,7 @@
   "scripts": {
     "test": "npx playwright test",
     "test:headed": "npx playwright test --headed",
+    "install:browsers": "npx playwright install chromium",
     "build": "tsc",
     "prebuild": "tsc --noEmit"
   },

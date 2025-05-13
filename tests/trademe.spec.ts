@@ -23,19 +23,28 @@ const LandArea = {
   "750m2": 0.075,
   "1000m2": 0.1,
   "2000m2": 0.2,
-}
+} as const;
 
 const MaxPrice = {
   "1m": 1000000,
   "750k": 750000,
-}
+  "650k": 650000,
+} as const;
 
+type LandAreaKey = keyof typeof LandArea;
+type MaxPriceKey = keyof typeof MaxPrice;
 
-const DATA_PATH = "750k_1000m2.csv";
+const PRICE_KEY: MaxPriceKey = "650k";
+const LAND_KEY: LandAreaKey = "1000m2";
+const MAX_PRICE = MaxPrice[PRICE_KEY];
+const MAX_LAND_AREA = LandArea[LAND_KEY];
+const DATA_PATH = `${PRICE_KEY}_${LAND_KEY}.csv`;
 const SEARCH =
-  `/a/property/residential/sale/search?price_max=${MaxPrice}&bedrooms_min=1&property_type=house&land_area_min=${LandArea["2000m2"]}&sort_order=expirydesc`;
+  `/a/property/residential/sale/search?price_max=${MAX_PRICE}&bedrooms_min=1&property_type=house&land_area_min=${MAX_LAND_AREA}&sort_order=expirydesc`;
 
 test("scrape", async ({ page, context }) => {
+  console.log(`Price: ${PRICE_KEY}`);
+  console.log(`Land: ${LAND_KEY}`);
   await goto(page, SEARCH, "tm-search-card-switcher");
   const data = loadData();
   await scrapeLinks(data, page, context);
