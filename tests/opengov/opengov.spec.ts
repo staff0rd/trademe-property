@@ -63,17 +63,52 @@ async function downloadDocuments(page: Page) {
     await downloadLink.click();
     const download = await downloadPromise;
 
+    console.log(`Downloading: ${filename}`);
+
     // Save the file
-    try {
-      await download.saveAs(filepath);
-      console.log(`Downloaded: ${filename}`);
-    } catch (error) {
-      console.error(`Failed to download ${filename}: ${error}`);
-    }
+    downloadPromises.push(
+      download.saveAs(filepath)
+        .then(() => console.log(`Downloaded: ${filename}`))
+        .catch(error => console.error(`Failed to download ${filename}: ${error}`))
+    );
   }
+
+  // Wait for all downloads to complete
+  await Promise.all(downloadPromises);
 }
 
 test("scrape", async ({ page }) => {
   await page.goto(HOME);
-  await downloadDocuments(page);
+  
+  do {
+    await downloadDocuments(page);
+
+    // Find active page number
+    const activePage = await page.$('.pagination a[href="#"]');
+    if (!activePage) {
+      console.log('Could not find active page number');
+      break;
+    }
+    
+    const activeText = await activePage.textContent();
+    if (!activeText) {
+      console.log('Could not get active page text');
+      break;
+    }
+    
+    const currentPage = parseInt(activeText);
+    const nextPageSelector = `.pagination a:text("${currentPage + 1}")`;
+    
+    // Try to find next page link
+    const nextPageLink = await page.$(nextPageSelector);
+    if (!nextPageLink) {
+      console.log('No next page available');
+      break;
+    }
+
+    console.log(`Moving to page ${currentPage + 1}`);
+    await nextPageLink.click();
+    await page.waitForLoadState('networkidle');
+
+  } while (true);
 });
