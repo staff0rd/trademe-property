@@ -11,6 +11,7 @@ import {
   CircularProgress,
   Box,
   createTheme,
+  Link,
 } from "@mui/material";
 import type { PropertyRecord } from "@staff0rd/shared/types";
 
@@ -85,22 +86,19 @@ function App() {
         </Typography>
         <Grid container spacing={3}>
           {properties.map((property) => (
-            <Grid
-              key={property.href}
-              sx={{ width: { xs: "100%", sm: "50%", md: "33.33%" } }}
-            >
+            <Grid key={property.href} size={{ xs: 12, sm: 6, md: 4 }}>
               <Card>
                 {property.imageUrl && (
                   <CardMedia
                     component="img"
-                    height="200"
+                    height="300"
                     image={property.imageUrl}
                     alt={property.addressText}
                   />
                 )}
                 <CardContent>
                   <Typography gutterBottom variant="h6" component="div">
-                    {property.addressText}
+                    <Link href={property.href}>{property.addressText}</Link>
                   </Typography>
                   <Typography variant="body1" color="text.secondary">
                     Price: {property.price}

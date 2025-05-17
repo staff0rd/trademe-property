@@ -5,4 +5,6 @@ export type PropertyRecord = {
   created: string;
   broadband?: string;
   imageUrl?: string;
+  houseArea?: string;
+  landArea?: string;
 };

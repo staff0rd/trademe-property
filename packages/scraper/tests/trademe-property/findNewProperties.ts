@@ -19,6 +19,8 @@ export async function findNewProperties(
 
     const href = await link.getAttribute("href");
     if (!href) throw new Error("Link has no href");
+    const pageUrl = new URL(indexPage.url());
+    const fullHref = new URL(href, pageUrl.origin).toString();
 
     const address = result.locator("tm-property-search-card-address-subtitle");
     const addressText = await address.textContent();
@@ -40,13 +42,45 @@ export async function findNewProperties(
     );
     const imageUrl = (await imageEl.getAttribute("src")) || undefined;
 
+    // Find house and land areas
+    const metrics = result.locator(
+      ".tm-property-search-card-attribute-icons__metric"
+    );
+    const metricsCount = await metrics.count();
+    let houseArea: string | undefined;
+    let landArea: string | undefined;
+
+    for (let j = 0; j < metricsCount; j++) {
+      const metric = metrics.nth(j);
+      const icon = metric.locator("tg-icon");
+      const altText = await icon.getAttribute("alt");
+
+      if (altText === "House area" || altText === "Land area") {
+        const valueSpan = metric.locator(
+          ".tm-property-search-card-attribute-icons__metric-value"
+        );
+        const value = await valueSpan.textContent();
+        if (value) {
+          // Remove any whitespace and extract just the number
+          const numericValue = value.trim();
+          if (altText === "House area") {
+            houseArea = numericValue;
+          } else {
+            landArea = numericValue;
+          }
+        }
+      }
+    }
+
     //console.log(`Found ${addressText}, ${price}`);
     data.push({
       addressText,
       price,
-      href,
+      href: fullHref,
       created: new Date().toISOString(),
       imageUrl,
+      houseArea,
+      landArea,
     });
   }
 
