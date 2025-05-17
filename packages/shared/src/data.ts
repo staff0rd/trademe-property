@@ -18,6 +18,9 @@ export const MaxPrice = {
 export type LandAreaKey = keyof typeof LandArea;
 export type MaxPriceKey = keyof typeof MaxPrice;
 
+export type SortField = "created" | "landArea" | "price";
+export type SortOrder = "asc" | "desc";
+
 export const PRICE_KEY: MaxPriceKey = "650k";
 export const LAND_KEY: LandAreaKey = "750m2";
 export const MAX_PRICE = MaxPrice[PRICE_KEY];
@@ -62,12 +65,20 @@ export function loadData(): PropertyRecord[] {
   }
 }
 
-export function loadFibreProperties(): PropertyRecord[] {
+export function loadFibreProperties(
+  sortBy?: SortField,
+  order: SortOrder = "asc"
+): PropertyRecord[] {
   try {
     const db = getDb();
-    const records = db
-      .prepare("SELECT * FROM properties WHERE broadband LIKE '%fibre%'")
-      .all() as PropertyRecord[];
+
+    let query = "SELECT * FROM properties WHERE broadband LIKE '%fibre%'";
+    if (sortBy) {
+      const direction = order === "asc" ? "ASC" : "DESC";
+      query += ` ORDER BY ${sortBy} ${direction}`;
+    }
+
+    const records = db.prepare(query).all() as PropertyRecord[];
     db.close();
     return records;
   } catch (error) {

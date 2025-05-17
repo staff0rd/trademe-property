@@ -12,8 +12,14 @@ import {
   Box,
   createTheme,
   Link,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
+  Stack,
 } from "@mui/material";
 import type { PropertyRecord } from "@staff0rd/shared/types";
+import type { SortField, SortOrder } from "@staff0rd/shared/data";
 
 const theme = createTheme({
   palette: {
@@ -25,11 +31,19 @@ function App() {
   const [properties, setProperties] = useState<PropertyRecord[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [sortBy, setSortBy] = useState<SortField | "">("");
+  const [order, setOrder] = useState<SortOrder>("asc");
 
   useEffect(() => {
     const fetchProperties = async () => {
       try {
-        const response = await fetch("http://localhost:3000/api/properties");
+        const params = new URLSearchParams();
+        if (sortBy) params.append("sortBy", sortBy);
+        params.append("order", order);
+
+        const response = await fetch(
+          `http://localhost:3000/api/properties?${params}`
+        );
         if (!response.ok) {
           throw new Error("Failed to fetch properties");
         }
@@ -43,7 +57,7 @@ function App() {
     };
 
     fetchProperties();
-  }, []);
+  }, [sortBy, order]);
 
   if (loading) {
     return (
@@ -81,51 +95,86 @@ function App() {
     <ThemeProvider theme={theme}>
       <CssBaseline />
       <Container sx={{ py: 4 }}>
-        <Typography variant="h4" component="h1" gutterBottom>
-          Properties
-        </Typography>
-        <Grid container spacing={3}>
-          {properties.map((property) => (
-            <Grid key={property.href} size={{ xs: 12, sm: 6, md: 4 }}>
-              <Card>
-                {property.imageUrl && (
-                  <CardMedia
-                    component="img"
-                    height="300"
-                    image={property.imageUrl}
-                    alt={property.addressText}
-                  />
-                )}
-                <CardContent>
-                  <Typography gutterBottom variant="h6" component="div">
-                    <Link href={property.href}>{property.addressText}</Link>
-                  </Typography>
-                  <Typography variant="body1" color="text.secondary">
-                    Price: {property.price}
-                  </Typography>
-                  {property.houseArea && (
-                    <Typography variant="body2" color="text.secondary">
-                      House Area: {property.houseArea}
-                    </Typography>
+        <Stack spacing={3}>
+          <Typography variant="h4" component="h1">
+            Properties
+          </Typography>
+          <Stack direction="row" spacing={2}>
+            <FormControl sx={{ minWidth: 120 }}>
+              <InputLabel>Sort By</InputLabel>
+              <Select
+                value={sortBy}
+                label="Sort By"
+                onChange={(e) => setSortBy(e.target.value as SortField | "")}
+              >
+                <MenuItem value="">None</MenuItem>
+                <MenuItem value="created">Created Date</MenuItem>
+                <MenuItem value="landArea">Land Area</MenuItem>
+                <MenuItem value="price">Price</MenuItem>
+              </Select>
+            </FormControl>
+            <FormControl sx={{ minWidth: 120 }}>
+              <InputLabel>Order</InputLabel>
+              <Select
+                value={order}
+                label="Order"
+                onChange={(e) => setOrder(e.target.value as SortOrder)}
+              >
+                <MenuItem value="asc">Ascending</MenuItem>
+                <MenuItem value="desc">Descending</MenuItem>
+              </Select>
+            </FormControl>
+          </Stack>
+          <Grid container spacing={3}>
+            {properties.map((property) => (
+              <Grid
+                key={property.href}
+                size={{
+                  xs: 12,
+                  sm: 8,
+                  md: 6,
+                }}
+              >
+                <Card>
+                  {property.imageUrl && (
+                    <CardMedia
+                      component="img"
+                      height="400"
+                      image={property.imageUrl}
+                      alt={property.addressText}
+                    />
                   )}
-                  {property.landArea && (
-                    <Typography variant="body2" color="text.secondary">
-                      Land Area: {property.landArea}
+                  <CardContent>
+                    <Typography gutterBottom variant="h6" component="div">
+                      <Link href={property.href}>{property.addressText}</Link>
                     </Typography>
-                  )}
-                  {property.broadband && (
-                    <Typography variant="body2" color="text.secondary">
-                      Broadband: {property.broadband}
+                    <Typography variant="body1" color="text.secondary">
+                      Price: {property.price}
                     </Typography>
-                  )}
-                  <Typography variant="body2" color="text.secondary">
-                    Listed: {new Date(property.created).toLocaleDateString()}
-                  </Typography>
-                </CardContent>
-              </Card>
-            </Grid>
-          ))}
-        </Grid>
+                    {property.houseArea && (
+                      <Typography variant="body2" color="text.secondary">
+                        House Area: {property.houseArea}
+                      </Typography>
+                    )}
+                    {property.landArea && (
+                      <Typography variant="body2" color="text.secondary">
+                        Land Area: {property.landArea}
+                      </Typography>
+                    )}
+                    {property.broadband && (
+                      <Typography variant="body2" color="text.secondary">
+                        Broadband: {property.broadband}
+                      </Typography>
+                    )}
+                    <Typography variant="body2" color="text.secondary">
+                      Listed: {new Date(property.created).toLocaleDateString()}
+                    </Typography>
+                  </CardContent>
+                </Card>
+              </Grid>
+            ))}
+          </Grid>
+        </Stack>
       </Container>
     </ThemeProvider>
   );
