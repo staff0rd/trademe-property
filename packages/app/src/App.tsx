@@ -103,6 +103,16 @@ function App() {
                   <Typography variant="body1" color="text.secondary">
                     Price: {property.price}
                   </Typography>
+                  {property.houseArea && (
+                    <Typography variant="body2" color="text.secondary">
+                      House Area: {property.houseArea}
+                    </Typography>
+                  )}
+                  {property.landArea && (
+                    <Typography variant="body2" color="text.secondary">
+                      Land Area: {property.landArea}
+                    </Typography>
+                  )}
                   {property.broadband && (
                     <Typography variant="body2" color="text.secondary">
                       Broadband: {property.broadband}
