@@ -1,9 +1,4 @@
 node_modules/
-/test-results/
-/playwright-report/
-/blob-report/
-/playwright/.cache/
-downloads
 .DS_Store
 dist
 data

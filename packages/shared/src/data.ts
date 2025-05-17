@@ -26,6 +26,7 @@ export const DATA_PATH = path.join(
   __dirname,
   "..",
   "..",
+  "..",
   "data",
   `${PRICE_KEY}_${LAND_KEY}.db`
 );

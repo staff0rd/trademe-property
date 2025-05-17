@@ -1,7 +1,7 @@
 import { test } from "@playwright/test";
 import { scrapeLinks } from "./scrapeLinks";
 import { goto } from "./navigation";
-import { loadData, SEARCH, PRICE_KEY, LAND_KEY } from "./data";
+import { loadData, SEARCH, PRICE_KEY, LAND_KEY } from "@staff0rd/shared/data";
 
 test("scrape", async ({ page, context }) => {
   console.log(`Price: ${PRICE_KEY}`);
