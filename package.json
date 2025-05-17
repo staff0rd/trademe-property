@@ -15,7 +15,13 @@
   "license": "ISC",
   "devDependencies": {
     "@playwright/test": "^1.47.2",
+    "@types/better-sqlite3": "^7.6.13",
     "@types/node": "^22.7.4",
     "typescript": "^5.0.0"
+  },
+  "dependencies": {
+    "better-sqlite3": "^11.10.0",
+    "bottleneck": "^2.19.5",
+    "csv": "^6.3.11"
   }
 }
