@@ -22,9 +22,14 @@ export const PRICE_KEY: MaxPriceKey = "650k";
 export const LAND_KEY: LandAreaKey = "750m2";
 export const MAX_PRICE = MaxPrice[PRICE_KEY];
 export const MAX_LAND_AREA = LandArea[LAND_KEY];
-export const DATA_PATH = path.join(__dirname, `${PRICE_KEY}_${LAND_KEY}.db`);
-export const SEARCH =
-  `/a/property/residential/sale/taranaki/search?price_max=${MAX_PRICE}&bedrooms_min=1&property_type=house&land_area_min=${MAX_LAND_AREA}&sort_order=expirydesc`;
+export const DATA_PATH = path.join(
+  __dirname,
+  "..",
+  "..",
+  "data",
+  `${PRICE_KEY}_${LAND_KEY}.db`
+);
+export const SEARCH = `/a/property/residential/sale/taranaki/search?price_max=${MAX_PRICE}&bedrooms_min=1&property_type=house&land_area_min=${MAX_LAND_AREA}&sort_order=expirydesc`;
 
 function getDb() {
   const db = new Database(DATA_PATH);
@@ -44,7 +49,9 @@ function getDb() {
 export function loadData(): PropertyRecord[] {
   try {
     const db = getDb();
-    const records = db.prepare('SELECT * FROM properties').all() as PropertyRecord[];
+    const records = db
+      .prepare("SELECT * FROM properties")
+      .all() as PropertyRecord[];
     db.close();
     return records;
   } catch (error) {
