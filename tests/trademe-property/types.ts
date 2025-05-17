@@ -4,4 +4,5 @@ export type PropertyRecord = {
   href: string;
   created: string;
   broadband?: string;
+  imageUrl?: string;
 };

@@ -1,9 +1,9 @@
 import { getBroadbandForData } from "./getBroadbandForData";
-import { saveData } from "./trademe.spec";
 import { printPropertiesWithFibre } from "./printPropertiesWithFibre";
 import { Page, BrowserContext } from "@playwright/test";
 import { PropertyRecord } from "./types";
 import { findNewProperties } from "./findNewProperties";
+import { saveData } from "./data";
 
 export async function scrapeLinks(
   data: PropertyRecord[],

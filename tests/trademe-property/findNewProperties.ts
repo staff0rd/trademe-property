@@ -30,6 +30,9 @@ export async function findNewProperties(
     
     // Check if the price text contains a valid price format ($X,XXX or $XXX,XXX etc)
     if (!price.match(/\$\d{1,3}(?:,\d{3})*$/)) continue;
+
+    const imageEl = result.locator("img.tm-progressive-image-loader__full[alt^='Image 1 of']");
+    const imageUrl = await imageEl.getAttribute("src") || undefined;
     
     //console.log(`Found ${addressText}, ${price}`);
     data.push({
@@ -37,6 +40,7 @@ export async function findNewProperties(
       price,
       href,
       created: new Date().toISOString(),
+      imageUrl,
     });
   }
 

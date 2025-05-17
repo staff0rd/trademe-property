@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "npx playwright test",
-    "test:headed": "npx playwright test --headed",
+    "test:headed": "npx playwright test trademe.spec.ts --headed",
     "install:browsers": "npx playwright install chromium",
     "build": "tsc",
     "prebuild": "tsc --noEmit"
@@ -17,9 +17,5 @@
     "@playwright/test": "^1.47.2",
     "@types/node": "^22.7.4",
     "typescript": "^5.0.0"
-  },
-  "dependencies": {
-    "bottleneck": "^2.19.5",
-    "csv": "^6.3.10"
   }
 }
