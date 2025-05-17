@@ -7,8 +7,14 @@ const limiter = new Bottleneck({
   minTime: 1033,
 });
 
-export async function goto(page: Page, path: string, waitForSelector?: string): Promise<void> {
-  const url = `${HOST}${path.startsWith("/") ? path : `/${path}`}`;
+export async function goto(
+  page: Page,
+  path: string,
+  waitForSelector?: string
+): Promise<void> {
+  const url = path.startsWith("http")
+    ? path
+    : `${HOST}${path.startsWith("/") ? path : `/${path}`}`;
   await limiter.schedule(async () => {
     await page.goto(url, { waitUntil: "domcontentloaded" });
     if (waitForSelector) {

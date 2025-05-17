@@ -41,7 +41,9 @@ function getDb() {
       href TEXT,
       created TEXT,
       broadband TEXT,
-      imageUrl TEXT
+      imageUrl TEXT,
+      houseArea TEXT,
+      landArea TEXT
     )
   `);
   return db;
@@ -60,11 +62,24 @@ export function loadData(): PropertyRecord[] {
   }
 }
 
+export function loadFibreProperties(): PropertyRecord[] {
+  try {
+    const db = getDb();
+    const records = db
+      .prepare("SELECT * FROM properties WHERE broadband LIKE '%fibre%'")
+      .all() as PropertyRecord[];
+    db.close();
+    return records;
+  } catch (error) {
+    return [];
+  }
+}
+
 export async function saveData(data: PropertyRecord[]): Promise<void> {
   const db = getDb();
   const insert = db.prepare(`
-    INSERT OR REPLACE INTO properties (addressText, price, href, created, broadband, imageUrl)
-    VALUES (@addressText, @price, @href, @created, @broadband, @imageUrl)
+    INSERT OR REPLACE INTO properties (addressText, price, href, created, broadband, imageUrl, houseArea, landArea)
+    VALUES (@addressText, @price, @href, @created, @broadband, @imageUrl, @houseArea, @landArea)
   `);
 
   const insertMany = db.transaction((records: PropertyRecord[]) => {

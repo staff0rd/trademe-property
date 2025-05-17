@@ -1,5 +1,5 @@
 import express from "express";
-import { loadData } from "@staff0rd/shared/data";
+import { loadFibreProperties } from "@staff0rd/shared/data";
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -19,7 +19,7 @@ app.use((req, res, next) => {
 // Get all properties endpoint
 app.get("/api/properties", (req, res) => {
   try {
-    const properties = loadData();
+    const properties = loadFibreProperties();
     res.json(properties);
   } catch (error) {
     console.error("Error loading properties:", error);
