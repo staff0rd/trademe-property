@@ -1,19 +1,14 @@
 {
+  "extends": "../../tsconfig.json",
   "compilerOptions": {
     "target": "es2021",
     "module": "commonjs",
     "moduleResolution": "node",
     "sourceMap": true,
     "outDir": "./dist",
-    "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
     "strict": true,
-    "skipLibCheck": true,
-    "baseUrl": ".",
-    "paths": {
-      "*": ["node_modules/*"],
-      "@staff0rd/shared/*": ["../shared/src/*"]
-    }
+    "skipLibCheck": true
   },
   "include": ["tests/**/*"],
   "exclude": ["node_modules"]

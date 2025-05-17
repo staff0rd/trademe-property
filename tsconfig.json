@@ -1,7 +1,9 @@
 {
   "compilerOptions": {
     "baseUrl": ".",
+    "esModuleInterop": true,
     "paths": {
+      "*": ["node_modules/*"],
       "@staff0rd/shared/*": ["packages/shared/src/*"]
     }
   }
