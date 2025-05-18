@@ -1,5 +1,6 @@
 import { Page } from "@playwright/test";
 import { PropertyRecord } from "@staff0rd/shared/types";
+import * as chrono from "chrono-node";
 
 export async function findNewProperties(
   indexPage: Page,
@@ -72,12 +73,23 @@ export async function findNewProperties(
       }
     }
 
+    const listedDateEl = result.locator(
+      "tm-property-search-card-listed-date span.ng-star-inserted"
+    );
+    const listedDate = await listedDateEl.textContent();
+    if (!listedDate) throw new Error("Listed date not found");
+
+    // Parse date like " Fri, 16 May " into ISO format
+    const trimmedDate = listedDate.trim();
+    const parsedDate = chrono.parseDate(trimmedDate);
+    const isoDate = parsedDate?.toISOString() || "unknown";
+
     //console.log(`Found ${addressText}, ${price}`);
     data.push({
       addressText,
       price,
       href: fullHref,
-      created: new Date().toISOString(),
+      created: isoDate,
       imageUrl,
       houseArea,
       landArea,
