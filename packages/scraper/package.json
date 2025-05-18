@@ -2,13 +2,18 @@
   "name": "scraper",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "dist/index.js",
+  "bin": {
+    "property-scraper": "./dist/index.js"
+  },
   "scripts": {
     "test": "npx playwright test trademe.spec.ts",
     "test:headed": "npx playwright test trademe.spec.ts --headed",
     "install:browsers": "npx playwright install chromium",
     "build": "tsc",
-    "prebuild": "tsc --noEmit"
+    "prebuild": "tsc --noEmit",
+    "prepare": "npm run build",
+    "scrape": "tsx ./src/index.ts"
   },
   "keywords": [],
   "author": "",
@@ -23,6 +28,7 @@
     "better-sqlite3": "^11.10.0",
     "bottleneck": "^2.19.5",
     "chrono-node": "^2.8.0",
+    "commander": "^13.1.0",
     "csv": "^6.3.11"
   }
 }
