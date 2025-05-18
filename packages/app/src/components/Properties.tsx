@@ -86,12 +86,15 @@ export function Properties() {
             >
               <Card>
                 {property.imageUrl && (
-                  <CardMedia
-                    component="img"
-                    height="400"
-                    image={property.imageUrl}
-                    alt={property.addressText}
-                  />
+                  <Link href={property.href}>
+                    <CardMedia
+                      component="img"
+                      height="400"
+                      image={property.imageUrl}
+                      alt={property.addressText}
+                      sx={{ cursor: "pointer" }}
+                    />
+                  </Link>
                 )}
                 <CardContent>
                   <Stack
