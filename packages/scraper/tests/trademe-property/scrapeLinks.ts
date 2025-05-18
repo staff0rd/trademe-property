@@ -1,14 +1,14 @@
 import { getBroadbandForData } from "./getBroadbandForData";
 import { printPropertiesWithFibre } from "./printPropertiesWithFibre";
-import { Page, BrowserContext } from "@playwright/test";
+import { Page } from "@playwright/test";
 import { PropertyRecord } from "@staff0rd/shared/types";
 import { findNewProperties } from "./findNewProperties";
 import { saveData } from "@staff0rd/shared/data";
 
 export async function scrapeLinks(
+  fileName: string,
   data: PropertyRecord[],
   indexPage: Page,
-  context: BrowserContext,
   count: number = 1
 ): Promise<void> {
   // Collect data from current page
@@ -18,7 +18,7 @@ export async function scrapeLinks(
   await getBroadbandForData(updatedData, indexPage);
 
   printPropertiesWithFibre(updatedData);
-  saveData(updatedData);
+  saveData(fileName, updatedData);
 
   console.log(`Page ${count}: ${updatedData.length} properties found`);
 
@@ -33,5 +33,5 @@ export async function scrapeLinks(
   }
 
   await next.click();
-  await scrapeLinks(updatedData, indexPage, context, count + 1);
+  await scrapeLinks(fileName, updatedData, indexPage, count + 1);
 }

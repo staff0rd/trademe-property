@@ -21,22 +21,24 @@ export type MaxPriceKey = keyof typeof MaxPrice;
 export type SortField = "created" | "landArea" | "price";
 export type SortOrder = "asc" | "desc";
 
-export const PRICE_KEY: MaxPriceKey = "650k";
-export const LAND_KEY: LandAreaKey = "750m2";
-export const MAX_PRICE = MaxPrice[PRICE_KEY];
-export const MAX_LAND_AREA = LandArea[LAND_KEY];
-export const DATA_PATH = path.join(
-  __dirname,
-  "..",
-  "..",
-  "..",
-  "data",
-  `${PRICE_KEY}_${LAND_KEY}.db`
-);
-export const SEARCH = `/a/property/residential/sale/taranaki/search?price_max=${MAX_PRICE}&bedrooms_min=1&property_type=house&land_area_min=${MAX_LAND_AREA}&sort_order=expirydesc`;
+export const DATA_PATH_ROOT = path.join(__dirname, "..", "..", "..", "data");
 
-function getDb() {
-  const db = new Database(DATA_PATH);
+export function getDbFilePath(parameterString: string) {
+  return path.join(DATA_PATH_ROOT, `${parameterString}.db`);
+}
+
+export function buildDbFilePath(priceKey: string, landKey: string) {
+  return getDbFilePath(`${priceKey}_${landKey}`);
+}
+
+export function getSearchPath(priceKey: MaxPriceKey, landKey: LandAreaKey) {
+  const MAX_PRICE = MaxPrice[priceKey];
+  const MAX_LAND_AREA = LandArea[landKey];
+  return `/a/property/residential/sale/search?price_max=${MAX_PRICE}&bedrooms_min=1&property_type=house&land_area_min=${MAX_LAND_AREA}&sort_order=expirydesc`;
+}
+
+function getDb(dbPath: string) {
+  const db = new Database(dbPath);
   db.exec(`
     CREATE TABLE IF NOT EXISTS properties (
       addressText TEXT PRIMARY KEY,
@@ -52,9 +54,9 @@ function getDb() {
   return db;
 }
 
-export function loadData(): PropertyRecord[] {
+export function loadData(fileName: string): PropertyRecord[] {
   try {
-    const db = getDb();
+    const db = getDb(fileName);
     const records = db
       .prepare("SELECT * FROM properties")
       .all() as PropertyRecord[];
@@ -66,11 +68,12 @@ export function loadData(): PropertyRecord[] {
 }
 
 export function loadFibreProperties(
+  parameterString: string,
   sortBy?: SortField,
   order: SortOrder = "asc"
 ): PropertyRecord[] {
   try {
-    const db = getDb();
+    const db = getDb(getDbFilePath(parameterString));
 
     let query = "SELECT * FROM properties WHERE broadband LIKE '%fibre%'";
     if (sortBy) {
@@ -86,8 +89,11 @@ export function loadFibreProperties(
   }
 }
 
-export async function saveData(data: PropertyRecord[]): Promise<void> {
-  const db = getDb();
+export async function saveData(
+  fileName: string,
+  data: PropertyRecord[]
+): Promise<void> {
+  const db = getDb(fileName);
   const insert = db.prepare(`
     INSERT OR REPLACE INTO properties (addressText, price, href, created, broadband, imageUrl, houseArea, landArea)
     VALUES (@addressText, @price, @href, @created, @broadband, @imageUrl, @houseArea, @landArea)
