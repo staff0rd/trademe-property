@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import type { SortOrder } from "@staff0rd/shared/data";
 import {
   CssBaseline,
   ThemeProvider,
@@ -18,8 +18,7 @@ import {
   MenuItem,
   Stack,
 } from "@mui/material";
-import type { PropertyRecord } from "@staff0rd/shared/types";
-import type { SortField, SortOrder } from "@staff0rd/shared/data";
+import { useCategories, useProperties } from "./propertyStore";
 
 const theme = createTheme({
   palette: {
@@ -28,59 +27,9 @@ const theme = createTheme({
 });
 
 function App() {
-  const [properties, setProperties] = useState<PropertyRecord[]>([]);
-  const [categories, setCategories] = useState<string[]>([]);
-  const [selectedCategory, setSelectedCategory] = useState<string>("");
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [sortBy, setSortBy] = useState<SortField>("price");
-  const [order, setOrder] = useState<SortOrder>("asc");
-
-  useEffect(() => {
-    const fetchCategories = async () => {
-      try {
-        const response = await fetch("http://localhost:3000/api/categories");
-        if (!response.ok) {
-          throw new Error("Failed to fetch categories");
-        }
-        const data = await response.json();
-        setCategories(data);
-        if (data.length > 0) {
-          setSelectedCategory(data[0]);
-        }
-      } catch (err) {
-        setError(err instanceof Error ? err.message : "An error occurred");
-      }
-    };
-    fetchCategories();
-  }, []);
-
-  useEffect(() => {
-    if (!selectedCategory) return;
-
-    const fetchProperties = async () => {
-      try {
-        const params = new URLSearchParams();
-        if (sortBy) params.append("sortBy", sortBy);
-        params.append("order", order);
-
-        const response = await fetch(
-          `http://localhost:3000/api/properties/${selectedCategory}?${params}`
-        );
-        if (!response.ok) {
-          throw new Error("Failed to fetch properties");
-        }
-        const data = await response.json();
-        setProperties(data);
-      } catch (err) {
-        setError(err instanceof Error ? err.message : "An error occurred");
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchProperties();
-  }, [sortBy, order, selectedCategory]);
+  const { categories, selectedCategory, setSelectedCategory } = useCategories();
+  const { properties, loading, error, sortBy, setSortBy, order, setOrder } =
+    useProperties();
 
   if (loading) {
     return (
@@ -142,7 +91,7 @@ function App() {
               <Select
                 value={sortBy}
                 label="Sort By"
-                onChange={(e) => setSortBy(e.target.value as SortField | "")}
+                onChange={(e) => setSortBy(e.target.value)}
               >
                 <MenuItem value="price">Price</MenuItem>
                 <MenuItem value="created">Created Date</MenuItem>
