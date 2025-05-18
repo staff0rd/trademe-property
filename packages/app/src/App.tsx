@@ -29,12 +29,35 @@ const theme = createTheme({
 
 function App() {
   const [properties, setProperties] = useState<PropertyRecord[]>([]);
+  const [categories, setCategories] = useState<string[]>([]);
+  const [selectedCategory, setSelectedCategory] = useState<string>("");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [sortBy, setSortBy] = useState<SortField | "">("");
   const [order, setOrder] = useState<SortOrder>("asc");
 
   useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const response = await fetch("http://localhost:3000/api/categories");
+        if (!response.ok) {
+          throw new Error("Failed to fetch categories");
+        }
+        const data = await response.json();
+        setCategories(data);
+        if (data.length > 0) {
+          setSelectedCategory(data[0]);
+        }
+      } catch (err) {
+        setError(err instanceof Error ? err.message : "An error occurred");
+      }
+    };
+    fetchCategories();
+  }, []);
+
+  useEffect(() => {
+    if (!selectedCategory) return;
+
     const fetchProperties = async () => {
       try {
         const params = new URLSearchParams();
@@ -42,7 +65,7 @@ function App() {
         params.append("order", order);
 
         const response = await fetch(
-          `http://localhost:3000/api/properties?${params}`
+          `http://localhost:3000/api/properties/${selectedCategory}?${params}`
         );
         if (!response.ok) {
           throw new Error("Failed to fetch properties");
@@ -57,7 +80,7 @@ function App() {
     };
 
     fetchProperties();
-  }, [sortBy, order]);
+  }, [sortBy, order, selectedCategory]);
 
   if (loading) {
     return (
@@ -101,6 +124,20 @@ function App() {
           </Typography>
           <Stack direction="row" spacing={2}>
             <FormControl sx={{ minWidth: 120 }}>
+              <InputLabel>Category</InputLabel>
+              <Select
+                value={selectedCategory}
+                label="Category"
+                onChange={(e) => setSelectedCategory(e.target.value)}
+              >
+                {categories.map((category) => (
+                  <MenuItem key={category} value={category}>
+                    {category}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+            <FormControl sx={{ minWidth: 120 }}>
               <InputLabel>Sort By</InputLabel>
               <Select
                 value={sortBy}
@@ -131,8 +168,7 @@ function App() {
                 key={property.href}
                 size={{
                   xs: 12,
-                  sm: 8,
-                  md: 6,
+                  sm: 6,
                 }}
               >
                 <Card>
@@ -145,12 +181,18 @@ function App() {
                     />
                   )}
                   <CardContent>
-                    <Typography gutterBottom variant="h6" component="div">
-                      <Link href={property.href}>{property.addressText}</Link>
-                    </Typography>
-                    <Typography variant="body1" color="text.secondary">
-                      Price: {property.price}
-                    </Typography>
+                    <Stack spacing={2} direction="row">
+                      <Typography variant="h6" component="div">
+                        <Link href={property.href}>{property.addressText}</Link>
+                      </Typography>
+                      <Typography
+                        variant="h6"
+                        color="text.secondary"
+                        sx={{ textAlign: "right" }}
+                      >
+                        {property.price}
+                      </Typography>
+                    </Stack>
                     {property.houseArea && (
                       <Typography variant="body2" color="text.secondary">
                         House Area: {property.houseArea}
