@@ -2,6 +2,27 @@ import { Page } from "@playwright/test";
 import { PropertyRecord } from "@staff0rd/shared/types";
 import * as chrono from "chrono-node";
 
+const formatPrice = (
+  price: string
+): { priceText: string; priceNumber: number } => {
+  // Match everything before the dollar amount as text, and the dollar amount itself
+  const matches = price.match(/^(.*?)\$([0-9,]+)$/);
+  if (!matches) {
+    throw new Error(`Unable to parse price: ${price}`);
+  }
+
+  // Extract text and remove leading/trailing whitespace
+  const priceText = matches[1].trim();
+
+  // Convert price string to number by removing commas and converting to integer
+  const priceNumber = parseInt(matches[2].replace(/,/g, ""), 10);
+
+  return {
+    priceText,
+    priceNumber,
+  };
+};
+
 export async function findNewProperties(
   indexPage: Page,
   existingData: PropertyRecord[] = []
@@ -84,10 +105,13 @@ export async function findNewProperties(
     const parsedDate = chrono.parseDate(trimmedDate);
     const isoDate = parsedDate?.toISOString() || "unknown";
 
+    const { priceText, priceNumber } = formatPrice(price);
+
     //console.log(`Found ${addressText}, ${price}`);
     data.push({
       addressText,
-      price,
+      priceText,
+      priceNumber,
       href: fullHref,
       created: isoDate,
       imageUrl,

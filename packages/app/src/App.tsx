@@ -33,7 +33,7 @@ function App() {
   const [selectedCategory, setSelectedCategory] = useState<string>("");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [sortBy, setSortBy] = useState<SortField | "">("");
+  const [sortBy, setSortBy] = useState<SortField>("price");
   const [order, setOrder] = useState<SortOrder>("asc");
 
   useEffect(() => {
@@ -144,10 +144,9 @@ function App() {
                 label="Sort By"
                 onChange={(e) => setSortBy(e.target.value as SortField | "")}
               >
-                <MenuItem value="">None</MenuItem>
+                <MenuItem value="price">Price</MenuItem>
                 <MenuItem value="created">Created Date</MenuItem>
                 <MenuItem value="landArea">Land Area</MenuItem>
-                <MenuItem value="price">Price</MenuItem>
               </Select>
             </FormControl>
             <FormControl sx={{ minWidth: 120 }}>
@@ -181,17 +180,31 @@ function App() {
                     />
                   )}
                   <CardContent>
-                    <Stack spacing={2} direction="row">
+                    <Stack
+                      spacing={2}
+                      direction="row"
+                      justifyContent="space-between"
+                    >
                       <Typography variant="h6" component="div">
                         <Link href={property.href}>{property.addressText}</Link>
                       </Typography>
-                      <Typography
-                        variant="h6"
-                        color="text.secondary"
-                        sx={{ textAlign: "right" }}
-                      >
-                        {property.price}
-                      </Typography>
+                      <Stack alignItems="flex-end">
+                        <Typography
+                          variant="subtitle1"
+                          color="text.secondary"
+                          sx={{ textAlign: "right" }}
+                        >
+                          {property.priceText}
+                        </Typography>
+                        <Typography variant="h6" color="text.secondary">
+                          {property.priceNumber.toLocaleString("en-NZ", {
+                            style: "currency",
+                            currency: "NZD",
+                            minimumFractionDigits: 0,
+                            maximumFractionDigits: 0,
+                          })}
+                        </Typography>
+                      </Stack>
                     </Stack>
                     {property.houseArea && (
                       <Typography variant="body2" color="text.secondary">

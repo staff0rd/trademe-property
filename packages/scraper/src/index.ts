@@ -19,7 +19,7 @@ program
   .command("trademe")
   .description("Scrape TradeMe property listings")
   .option("-p, --price <price>", "Maximum price", "650k")
-  .option("-l, --land <area>", "Minimum land area", "750m2")
+  .option("-l, --land <area>", "Minimum land area", "2000m2")
   .action(async (options) => {
     const priceKey = options.price as MaxPriceKey;
     const landKey = options.land as LandAreaKey;

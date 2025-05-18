@@ -42,7 +42,8 @@ function getDb(dbPath: string) {
   db.exec(`
     CREATE TABLE IF NOT EXISTS properties (
       addressText TEXT PRIMARY KEY,
-      price TEXT,
+      priceText TEXT,
+      priceNumber INTEGER,
       href TEXT,
       created TEXT,
       broadband TEXT,
@@ -78,7 +79,9 @@ export function loadFibreProperties(
     let query = "SELECT * FROM properties WHERE broadband LIKE '%fibre%'";
     if (sortBy) {
       const direction = order === "asc" ? "ASC" : "DESC";
-      query += ` ORDER BY ${sortBy} ${direction}`;
+      query += ` ORDER BY ${
+        sortBy === "price" ? "priceNumber" : sortBy
+      } ${direction}`;
     }
 
     const records = db.prepare(query).all() as PropertyRecord[];
@@ -95,8 +98,8 @@ export async function saveData(
 ): Promise<void> {
   const db = getDb(fileName);
   const insert = db.prepare(`
-    INSERT OR REPLACE INTO properties (addressText, price, href, created, broadband, imageUrl, houseArea, landArea)
-    VALUES (@addressText, @price, @href, @created, @broadband, @imageUrl, @houseArea, @landArea)
+    INSERT OR REPLACE INTO properties (addressText, priceText, priceNumber, href, created, broadband, imageUrl, houseArea, landArea)
+    VALUES (@addressText, @priceText, @priceNumber, @href, @created, @broadband, @imageUrl, @houseArea, @landArea)
   `);
 
   const insertMany = db.transaction((records: PropertyRecord[]) => {

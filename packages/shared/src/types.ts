@@ -1,6 +1,7 @@
 export type PropertyRecord = {
   addressText: string;
-  price: string;
+  priceText: string;
+  priceNumber: number;
   href: string;
   created: string;
   broadband?: string;
