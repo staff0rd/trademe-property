@@ -8,6 +8,7 @@
   ],
   "scripts": {
     "dev": "run-p dev:*",
+    "scrape": "npm run scrape -w scraper",
     "dev:app": "npm run dev -w app",
     "dev:server": "npm run dev -w server"
   },
